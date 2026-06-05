@@ -41,6 +41,26 @@ npm run dev
 | `npm run preview` | Preview the production build locally |
 | `npm run lint`    | Type-check with TypeScript           |
 
+## Deployment
+
+The app is hosted on [Google Cloud Run](https://cloud.google.com/run) and deploys automatically:
+
+1. Open a pull request against `main` (direct pushes are blocked by branch protection)
+2. Once approved and merged, the [Deploy to Cloud Run](.github/workflows/deploy.yml) GitHub Actions workflow builds the [Dockerfile](Dockerfile) (Vite production build served by nginx) and deploys it to the `heic-converter` service in `us-west2`
+
+GitHub authenticates to Google Cloud via [Workload Identity Federation](https://github.com/google-github-actions/auth#preferred-direct-workload-identity-federation) — no service-account keys are stored in the repo. The workflow uses two repository secrets:
+
+| Secret             | Purpose                                          |
+| ------------------ | ------------------------------------------------ |
+| `GCP_WIF_PROVIDER` | Workload Identity Federation provider resource   |
+| `GCP_DEPLOY_SA`    | Service account email the workflow impersonates  |
+
+To deploy manually instead:
+
+```bash
+gcloud run deploy heic-converter --region us-west2 --source .
+```
+
 ## How It Works
 
 HEIC (High Efficiency Image Container) is the default photo format on iPhones, but it isn't widely supported on the web or Windows. This app uses [heic2any](https://github.com/alexcorvi/heic2any) — a WebAssembly-backed decoder — to convert HEIC files to standard formats entirely in the browser. Your photos are never uploaded anywhere.
