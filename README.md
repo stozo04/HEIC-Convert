@@ -1,20 +1,46 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Convert HEIC To Any
 
-# Run and deploy your AI Studio app
+A fast, private, in-browser HEIC image converter. Drag in the `.heic` photos from your iPhone and get back JPG, PNG, or WebP — no uploads, no servers, no accounts. Every conversion happens locally in your browser.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/b4b9c564-6c31-4ab5-9eca-1eda745941c2
+- **Drag & drop** batch conversion of `.heic` files
+- **Multiple output formats** — JPEG, PNG, or WebP
+- **Download individually or all at once** as a ZIP archive
+- **Conversion history** persisted locally in your browser (IndexedDB), with one-click re-download
+- **100% private** — files never leave your machine; all processing runs client-side
 
-## Run Locally
+## Tech Stack
 
-**Prerequisites:**  Node.js
+- [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vite.dev/) for dev server and builds
+- [Tailwind CSS 4](https://tailwindcss.com/) for styling
+- [heic2any](https://github.com/alexcorvi/heic2any) for HEIC decoding/conversion
+- [JSZip](https://stuk.github.io/jszip/) for batch ZIP downloads
+- [idb-keyval](https://github.com/jakearchibald/idb-keyval) for IndexedDB history storage
+- [Lucide](https://lucide.dev/) icons and [Motion](https://motion.dev/) animations
 
+## Getting Started
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+**Prerequisites:** [Node.js](https://nodejs.org/) (v18 or later)
+
+```bash
+# Install dependencies
+npm install
+
+# Start the dev server (http://localhost:3000)
+npm run dev
+```
+
+## Scripts
+
+| Command           | Description                          |
+| ----------------- | ------------------------------------ |
+| `npm run dev`     | Start the development server         |
+| `npm run build`   | Build for production into `dist/`    |
+| `npm run preview` | Preview the production build locally |
+| `npm run lint`    | Type-check with TypeScript           |
+
+## How It Works
+
+HEIC (High Efficiency Image Container) is the default photo format on iPhones, but it isn't widely supported on the web or Windows. This app uses [heic2any](https://github.com/alexcorvi/heic2any) — a WebAssembly-backed decoder — to convert HEIC files to standard formats entirely in the browser. Your photos are never uploaded anywhere.

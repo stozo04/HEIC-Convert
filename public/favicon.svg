@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <!-- HEIC-orange to JPG-blue: the format change -->
+    <linearGradient id="tile" x1="4" y1="4" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF8A3D"/>
+      <stop offset="1" stop-color="#3B82F6"/>
+    </linearGradient>
+    <linearGradient id="swap" x1="36" y1="36" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF8A3D"/>
+      <stop offset="1" stop-color="#3B82F6"/>
+    </linearGradient>
+    <clipPath id="frame">
+      <rect x="4" y="4" width="52" height="52" rx="13"/>
+    </clipPath>
+  </defs>
+
+  <!-- photo tile -->
+  <rect x="4" y="4" width="52" height="52" rx="13" fill="url(#tile)"/>
+  <g clip-path="url(#frame)">
+    <!-- sun -->
+    <circle cx="21" cy="19" r="6" fill="#FFD93D"/>
+    <!-- mountains -->
+    <path d="M4 50 L20 29 L29 40 L37 29 L56 51 L56 56 L4 56 Z" fill="#FFFFFF" opacity="0.95"/>
+  </g>
+
+  <!-- swap badge -->
+  <circle cx="47" cy="47" r="15" fill="#FFFFFF"/>
+  <g fill="none" stroke="url(#swap)" stroke-width="3.5" stroke-linecap="round">
+    <!-- top arc -->
+    <path d="M39.1 45.6 A 8 8 0 0 1 54.9 45.6"/>
+    <!-- bottom arc -->
+    <path d="M54.9 48.4 A 8 8 0 0 1 39.1 48.4"/>
+  </g>
+  <!-- arrowheads -->
+  <path d="M51.2 43.6 L59 43.2 L55.2 50.2 Z" fill="url(#swap)"/>
+  <path d="M42.8 50.4 L35 50.8 L38.8 43.8 Z" fill="url(#swap)"/>
+</svg>
