@@ -1,6 +1,0 @@
-{
-  "name": "HEIC Converter",
-  "description": "Locally convert HEIC images to JPG (and other formats) with ease and privacy.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
