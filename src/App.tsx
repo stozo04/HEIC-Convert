@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { UploadCloud, FileImage, Download, Clock, Trash2, CheckCircle2, AlertCircle, Loader2, ArchiveRestore } from 'lucide-react';
 import JSZip from 'jszip';
 import { FileTask, HistoryRecord, ConversionStatus } from './types';
-import { convertHeicTo, formatBytes, downloadBlob } from './utils/converter';
+import { convertImage, formatBytes, downloadBlob, isSupportedInput, getOutputFileName, SUPPORTED_INPUT_EXTENSIONS } from './utils/converter';
 import { saveToHistory, getHistory, clearHistory } from './utils/db';
 
 export default function App() {
@@ -12,6 +12,9 @@ export default function App() {
   const [targetFormat, setTargetFormat] = useState('jpg');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Human-readable list of accepted input formats, kept in sync with the converter.
+  const supportedFormatsLabel = SUPPORTED_INPUT_EXTENSIONS.map(ext => ext.toUpperCase()).join(', ');
+
   // Load history on mount
   useEffect(() => {
     getHistory().then(setHistory);
@@ -19,7 +22,7 @@ export default function App() {
 
   const handleFiles = (files: FileList | File[]) => {
     const newTasks: FileTask[] = Array.from(files)
-      .filter(file => file.name.toLowerCase().endsWith('.heic'))
+      .filter(file => isSupportedInput(file.name))
       .map(file => ({
         id: crypto.randomUUID(),
         originalFile: file,
@@ -33,7 +36,7 @@ export default function App() {
     if (newTasks.length > 0) {
       setTasks(prev => [...prev, ...newTasks]);
     } else {
-      alert('Please upload .HEIC files only.');
+      alert('Unsupported file type. Please upload HEIC, WebP, PNG, JPEG, GIF, or BMP images.');
     }
   };
 
@@ -45,7 +48,7 @@ export default function App() {
       setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'converting' } : t));
       
       try {
-        const blob = await convertHeicTo(task.originalFile, targetFormat);
+        const blob = await convertImage(task.originalFile, targetFormat);
         
         // Save to history
         const record: HistoryRecord = {
@@ -105,7 +108,7 @@ export default function App() {
 
     const zip = new JSZip();
     completedTasks.forEach(task => {
-      const newName = task.originalName.replace(/\.heic$/i, `.${task.targetFormat}`);
+      const newName = getOutputFileName(task.originalName, task.targetFormat);
       // Cast to non-undefined since we filtered above
       zip.file(newName, task.convertedBlob!);
     });
@@ -146,7 +149,7 @@ export default function App() {
             <input
               type="file"
               multiple
-              accept=".heic,.HEIC"
+              accept=".heic,.heif,.webp,.png,.jpg,.jpeg,.gif,.bmp"
               className="hidden"
               ref={fileInputRef}
               onChange={(e) => {
@@ -157,8 +160,9 @@ export default function App() {
             <div className="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center mb-3">
               <UploadCloud className="w-6 h-6" />
             </div>
-            <p className="text-lg font-medium text-white">Drop HEIC files here</p>
+            <p className="text-lg font-medium text-white">Drop images here</p>
             <p className="text-sm text-slate-400 mt-1">or <span className="text-indigo-400 underline">browse from your computer</span></p>
+            <p className="text-[11px] text-slate-500 mt-2">Supports {supportedFormatsLabel}</p>
           </div>
 
           {/* Active Queue */}
@@ -209,7 +213,7 @@ export default function App() {
                     
                     {task.status === 'success' && task.convertedBlob ? (
                       <button
-                        onClick={() => downloadBlob(task.convertedBlob!, task.originalName.replace(/\.heic$/i, `.${task.targetFormat}`))}
+                        onClick={() => downloadBlob(task.convertedBlob!, getOutputFileName(task.originalName, task.targetFormat))}
                         className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-colors flex-shrink-0 cursor-pointer"
                       >
                         Download
@@ -301,7 +305,7 @@ export default function App() {
                         <p className="text-[10px] text-slate-500">{new Date(record.date).toLocaleDateString()} • {record.targetFormat.toUpperCase()}</p>
                       </div>
                       <button 
-                        onClick={() => downloadBlob(record.blob, record.originalName.replace(/\.heic$/i, `.${record.targetFormat}`))}
+                        onClick={() => downloadBlob(record.blob, getOutputFileName(record.originalName, record.targetFormat))}
                         className="text-slate-500 hover:text-indigo-400 transition-colors cursor-pointer opacity-0 group-hover:opacity-100 p-1"
                         title="Download"
                       >
@@ -330,16 +334,6 @@ export default function App() {
           </div>
         </div>
       </main>
-
-      {/* Privacy Footer Badge */}
-      <footer className="h-10 shrink-0 bg-[#0A0B0D] px-8 flex items-center justify-center space-x-4 border-t border-white/5 mt-auto">
-        <div className="flex items-center text-[10px] text-slate-500">
-          <svg className="w-3 h-3 mr-1 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 4.946-3.078 9.17-7.396 10.87a.487.487 0 01-.308 0C5.97 16.17 2.892 11.946 2.892 7c0-.681.057-1.35.166-2.001zm8.341 8.64a1 1 0 11-1.015-1.723 3 3 0 002.4-3.66.999.999 0 111.958.39 5 5 0 01-4.113 5.426l.77.567z" clipRule="evenodd"></path></svg>
-          End-to-End Encrypted
-        </div>
-        <div className="w-1 h-1 bg-slate-700 rounded-full"></div>
-        <div className="text-[10px] text-slate-500 uppercase tracking-widest hidden sm:block">Browser-based locally processed Engine v2.4.0</div>
-      </footer>
     </div>
   );
 }
