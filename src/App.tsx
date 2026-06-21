@@ -334,16 +334,6 @@ export default function App() {
           </div>
         </div>
       </main>
-
-      {/* Privacy Footer Badge */}
-      <footer className="h-10 shrink-0 bg-[#0A0B0D] px-8 flex items-center justify-center space-x-4 border-t border-white/5 mt-auto">
-        <div className="flex items-center text-[10px] text-slate-500">
-          <svg className="w-3 h-3 mr-1 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 4.946-3.078 9.17-7.396 10.87a.487.487 0 01-.308 0C5.97 16.17 2.892 11.946 2.892 7c0-.681.057-1.35.166-2.001zm8.341 8.64a1 1 0 11-1.015-1.723 3 3 0 002.4-3.66.999.999 0 111.958.39 5 5 0 01-4.113 5.426l.77.567z" clipRule="evenodd"></path></svg>
-          End-to-End Encrypted
-        </div>
-        <div className="w-1 h-1 bg-slate-700 rounded-full"></div>
-        <div className="text-[10px] text-slate-500 uppercase tracking-widest hidden sm:block">Browser-based locally processed Engine v2.4.0</div>
-      </footer>
     </div>
   );
 }
