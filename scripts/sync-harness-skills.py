@@ -107,15 +107,25 @@ def drift():
     found = []
     for rel in sorted(set().union(*(t.keys() for t in trees.values()))):
         state = {}
+        # Find a comparison base: prefer HARNESSES[0], but use the first available if it's missing
+        compare_base = base
+        if rel not in trees[base] or not trees[base][rel].exists():
+            for h in HARNESSES:
+                if rel in trees[h] and trees[h][rel].exists():
+                    compare_base = h
+                    break
+        
         for h in HARNESSES:
             # `git ls-files` still lists a tracked file that has been deleted on disk, so
             # existence is checked separately — an unstaged delete is drift like any other.
             if rel not in trees[h] or not trees[h][rel].exists():
                 state[h] = "missing"
-            elif rel not in trees[base] or not trees[base][rel].exists() or h == base:
+            elif h == compare_base:
+                state[h] = "same"
+            elif rel not in trees[compare_base] or not trees[compare_base][rel].exists():
                 state[h] = "same"
             else:
-                state[h] = "same" if same_content(trees[base][rel], base, trees[h][rel], h) else "differs"
+                state[h] = "same" if same_content(trees[compare_base][rel], compare_base, trees[h][rel], h) else "differs"
         # All-missing is consistent, not drift: git still lists a path deleted from every
         # harness (staged or not), and flagging that would leave --fix with nothing to do
         # and the gate permanently red until the delete was committed.
