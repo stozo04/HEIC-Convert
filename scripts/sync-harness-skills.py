@@ -114,7 +114,7 @@ def drift():
                 if rel in trees[h] and trees[h][rel].exists():
                     compare_base = h
                     break
-        
+
         for h in HARNESSES:
             # `git ls-files` still lists a tracked file that has been deleted on disk, so
             # existence is checked separately — an unstaged delete is drift like any other.

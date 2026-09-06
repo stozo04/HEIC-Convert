@@ -166,6 +166,17 @@ def main():
         assert "cursor edit" in (tmp / ".cursor" / SKILL).read_text(encoding="utf-8")
         assert "codex edit" in (tmp / ".codex" / SKILL).read_text(encoding="utf-8")
 
+    @case("missing_base_compares_survivors — differing remaining copies are reported")
+    def _(tmp):
+        (tmp / ".claude" / SKILL).unlink()
+        (tmp / ".cursor" / SKILL).write_text("# cursor version\n", encoding="utf-8")
+        (tmp / ".codex" / SKILL).write_text("# codex version\n", encoding="utf-8")
+        code, out = run(tmp)
+        assert code == 1 and ".claude: missing" in out and ".codex: differs" in out, out
+        assert run(tmp, "--fix")[0] == 2, "ambiguous repair must refuse"
+        assert (tmp / ".cursor" / SKILL).read_text(encoding="utf-8") == "# cursor version\n"
+        assert (tmp / ".codex" / SKILL).read_text(encoding="utf-8") == "# codex version\n"
+
     @case("self_reference — each copy pointing at its own skills tree is not drift")
     def _(tmp):
         for h in HARNESSES:

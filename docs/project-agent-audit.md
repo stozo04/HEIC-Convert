@@ -9,3 +9,12 @@ Reused the reference checker and 16 regression cases, with remote-default resolu
 Validation: 16 checker regression cases passed, covering missing files, drift, identical foreign references in both slash forms, source-preserving repair, CRLF, and ambiguous-source refusal. Sync passes for 1 placeholder x 3. npm run lint passes. Root pointers match, Cursor targets exist, and the staged diff was inspected and passes git diff --check.
 
 Skipped: production build, browser conversion, Cloud Run deployment, and interactive agent evaluation because no product behavior changed. No merge, release, or deployment performed.
+
+## Remote review follow-up
+
+Retained Cursor Agent's comparison-base fix from b8a2fc4: when the Claude copy
+is missing, compare surviving Cursor/Codex files rather than calling both same.
+Added a 17th regression proving differing survivors are reported and ambiguous
+repair refuses without altering either copy. All 17 cases and mirror parity pass.
+Product checks from the first commit remain applicable; this follow-up changes
+only checker diagnostics and its test.
